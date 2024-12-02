@@ -1,0 +1,58 @@
+{
+	"name": "dataflowcustomersyearadd",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sinkcustomer",
+						"type": "DatasetReference"
+					},
+					"name": "sinkcustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "customeryearaddJson1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkcustomeryearadd"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnage"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerKey as string,",
+				"          Prefix as string,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          BirthDate as string,",
+				"          MaritalStatus as string,",
+				"          Gender as string,",
+				"          EmailAddress as string,",
+				"          AnnualIncome as string,",
+				"          TotalChildren as string,",
+				"          EducationLevel as string,",
+				"          Occupation as string,",
+				"          HomeOwner as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sinkcustomer",
+				"sinkcustomer derive(birthyear = substring(BirthDate, length(BirthDate) - 3, 4)) ~> derivedColumnage",
+				"derivedColumnage sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['customeraddyear.json'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkcustomeryearadd"
+			]
+		}
+	}
+}

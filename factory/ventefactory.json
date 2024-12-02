@@ -1,0 +1,9 @@
+{
+	"name": "ventefactory",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b124b77c-9436-41b7-b8b4-18ad69f5d6ad",
+		"tenantId": "abd6509d-e33c-4515-87af-39d1905e26b7"
+	}
+}

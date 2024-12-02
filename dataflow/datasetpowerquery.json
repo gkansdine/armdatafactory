@@ -1,0 +1,36 @@
+{
+	"name": "datasetpowerquery",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "sales2015",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2015",
+					"dataset": {
+						"referenceName": "sales2015",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "sales2016",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2016",
+					"dataset": {
+						"referenceName": "sales2016",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "sales2017",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2017",
+					"dataset": {
+						"referenceName": "sales2017",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared sales2015 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2015.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared sales2016 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2016.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared sales2017 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2017.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"sales2015\" in Source;\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

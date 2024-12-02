@@ -1,0 +1,97 @@
+{
+	"name": "dataflowsales",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sales2015",
+						"type": "DatasetReference"
+					},
+					"name": "sales2015"
+				},
+				{
+					"dataset": {
+						"referenceName": "sales2016",
+						"type": "DatasetReference"
+					},
+					"name": "sales2016"
+				},
+				{
+					"dataset": {
+						"referenceName": "sales2017",
+						"type": "DatasetReference"
+					},
+					"name": "sales2017"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "allsales",
+						"type": "DatasetReference"
+					},
+					"name": "allsales",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "unionsales"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderDate as string,",
+				"          StockDate as string,",
+				"          OrderNumber as string,",
+				"          ProductKey as string,",
+				"          CustomerKey as string,",
+				"          TerritoryKey as string,",
+				"          OrderLineItem as string,",
+				"          OrderQuantity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sales2015",
+				"source(output(",
+				"          OrderDate as string,",
+				"          StockDate as string,",
+				"          OrderNumber as string,",
+				"          ProductKey as string,",
+				"          CustomerKey as string,",
+				"          TerritoryKey as string,",
+				"          OrderLineItem as string,",
+				"          OrderQuantity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sales2016",
+				"source(output(",
+				"          OrderDate as string,",
+				"          StockDate as string,",
+				"          OrderNumber as string,",
+				"          ProductKey as string,",
+				"          CustomerKey as string,",
+				"          TerritoryKey as string,",
+				"          OrderLineItem as string,",
+				"          OrderQuantity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sales2017",
+				"sales2015, sales2016, sales2017 union(byName: true)~> unionsales",
+				"unionsales sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['resultat_ventes.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> allsales"
+			]
+		}
+	}
+}

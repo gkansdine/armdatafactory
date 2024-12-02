@@ -1,0 +1,17 @@
+{
+	"name": "Azuresales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "",
+			"table": "ventes"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

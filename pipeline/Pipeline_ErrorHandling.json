@@ -1,0 +1,52 @@
+{
+	"name": "Pipeline_ErrorHandling",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT TOP 1 * FROM AdventureWorksSales",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Azuresales",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Fail1",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "La table SQL 'Sales' n'existe pas ou est inaccessible.",
+					"errorCode": "500"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-12-01T19:31:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

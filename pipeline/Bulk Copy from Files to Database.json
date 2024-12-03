@@ -15,30 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "GetMetadataDataset",
-						"type": "DatasetReference",
-						"parameters": {
-							"SourceContainer": {
-								"value": "@pipeline().parameters.SourceContainer",
-								"type": "Expression"
-							},
-							"SourceDirectory": {
-								"value": "@pipeline().parameters.SourceDirectory",
-								"type": "Expression"
-							}
-						}
-					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobFSReadSettings",
-						"recursive": true
-					},
-					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
-					}
+					"fieldList": []
 				}
 			},
 			{
@@ -82,10 +59,6 @@
 										"type": "DelimitedTextReadSettings"
 									}
 								},
-								"sink": {
-									"type": "AzureSqlSink",
-									"tableOption": "autoCreate"
-								},
 								"enableStaging": false
 							},
 							"inputs": [
@@ -103,18 +76,6 @@
 										},
 										"SourceDirectory": {
 											"value": "@pipeline().parameters.SourceDirectory",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "AzureSqlDatabaseSinkDataset",
-									"type": "DatasetReference",
-									"parameters": {
-										"sinkTableName": {
-											"value": "@item().name",
 											"type": "Expression"
 										}
 									}

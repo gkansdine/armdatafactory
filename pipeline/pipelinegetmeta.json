@@ -20,12 +20,7 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"size",
-						"lastModified",
-						"itemName",
-						"size",
-						"structure",
-						"columnCount"
+						"lastModified"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",

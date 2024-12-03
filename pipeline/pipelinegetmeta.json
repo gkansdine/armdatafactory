@@ -24,7 +24,8 @@
 						"lastModified",
 						"itemName",
 						"size",
-						"structure"
+						"structure",
+						"columnCount"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",

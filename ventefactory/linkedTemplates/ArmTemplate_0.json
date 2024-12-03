@@ -15,6 +15,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
 		},
+		"AzureSqlDatabase2_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase2'"
+		},
+		"linkedService1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'linkedService1'"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "serverdatabasekans.database.windows.net"
@@ -26,6 +38,34 @@
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "adminkans"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "serverdatabasekans.database.windows.net"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "@{linkedService().paradatabasename}"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adminkans"
+		},
+		"linkedService1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "serverdatabasekans.database.windows.net"
+		},
+		"linkedService1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "ventedabasejoanita"
+		},
+		"linkedService1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adminkans"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagevente.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -62,6 +102,103 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('AzureSqlDatabase1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"paradatabasename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('AzureSqlDatabase2_properties_typeProperties_server')]",
+					"database": "[parameters('AzureSqlDatabase2_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('AzureSqlDatabase2_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSqlDatabase2_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false,
+							"customProperties": []
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntimeSH')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('linkedService1_properties_typeProperties_server')]",
+					"database": "[parameters('linkedService1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('linkedService1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('linkedService1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
 					}
 				}
 			},
@@ -588,623 +725,200 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Pipeline_ErrorHandling')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/getmetadata')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT TOP 1 * FROM AdventureWorksSales",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "Azuresales",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "Fail1",
-						"type": "Fail",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"message": "La table SQL 'Sales' n'existe pas ou est inaccessible.",
-							"errorCode": "500"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"lastPublishTime": "2024-12-01T19:31:41Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Azuresales')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflowcustomersyearadd')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "sinkcustomer",
-								"type": "DatasetReference"
-							},
-							"name": "sinkcustomer"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "customeryearaddJson1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkcustomeryearadd"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumnage"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          CustomerKey as string,",
-						"          Prefix as string,",
-						"          FirstName as string,",
-						"          LastName as string,",
-						"          BirthDate as string,",
-						"          MaritalStatus as string,",
-						"          Gender as string,",
-						"          EmailAddress as string,",
-						"          AnnualIncome as string,",
-						"          TotalChildren as string,",
-						"          EducationLevel as string,",
-						"          Occupation as string,",
-						"          HomeOwner as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> sinkcustomer",
-						"sinkcustomer derive(birthyear = substring(BirthDate, length(BirthDate) - 3, 4)) ~> derivedColumnage",
-						"derivedColumnage sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['customeraddyear.json'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sinkcustomeryearadd"
-					]
-				}
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "AdventureWorks_Customers.csv",
+						"container": "dossiervente"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CustomerKey",
+						"type": "String"
+					},
+					{
+						"name": "Prefix",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "BirthDate",
+						"type": "String"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "String"
+					},
+					{
+						"name": "AnnualIncome",
+						"type": "String"
+					},
+					{
+						"name": "TotalChildren",
+						"type": "String"
+					},
+					{
+						"name": "EducationLevel",
+						"type": "String"
+					},
+					{
+						"name": "Occupation",
+						"type": "String"
+					},
+					{
+						"name": "HomeOwner",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/sinkcustomer')]",
-				"[concat(variables('factoryId'), '/datasets/customeryearaddJson1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflowsales')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "sales2015",
-								"type": "DatasetReference"
-							},
-							"name": "sales2015"
-						},
-						{
-							"dataset": {
-								"referenceName": "sales2016",
-								"type": "DatasetReference"
-							},
-							"name": "sales2016"
-						},
-						{
-							"dataset": {
-								"referenceName": "sales2017",
-								"type": "DatasetReference"
-							},
-							"name": "sales2017"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "allsales",
-								"type": "DatasetReference"
-							},
-							"name": "allsales",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStorage1",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "unionsales"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          OrderDate as string,",
-						"          StockDate as string,",
-						"          OrderNumber as string,",
-						"          ProductKey as string,",
-						"          CustomerKey as string,",
-						"          TerritoryKey as string,",
-						"          OrderLineItem as string,",
-						"          OrderQuantity as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> sales2015",
-						"source(output(",
-						"          OrderDate as string,",
-						"          StockDate as string,",
-						"          OrderNumber as string,",
-						"          ProductKey as string,",
-						"          CustomerKey as string,",
-						"          TerritoryKey as string,",
-						"          OrderLineItem as string,",
-						"          OrderQuantity as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> sales2016",
-						"source(output(",
-						"          OrderDate as string,",
-						"          StockDate as string,",
-						"          OrderNumber as string,",
-						"          ProductKey as string,",
-						"          CustomerKey as string,",
-						"          TerritoryKey as string,",
-						"          OrderLineItem as string,",
-						"          OrderQuantity as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> sales2017",
-						"sales2015, sales2016, sales2017 union(byName: true)~> unionsales",
-						"unionsales sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['resultat_ventes.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> allsales"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/sales2015')]",
-				"[concat(variables('factoryId'), '/datasets/sales2016')]",
-				"[concat(variables('factoryId'), '/datasets/sales2017')]",
-				"[concat(variables('factoryId'), '/datasets/allsales')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/datasetpowerquery')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/datasetcusomer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "WranglingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"name": "sales2015",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2015",
-							"dataset": {
-								"referenceName": "sales2015",
-								"type": "DatasetReference"
-							}
-						},
-						{
-							"name": "sales2016",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2016",
-							"dataset": {
-								"referenceName": "sales2016",
-								"type": "DatasetReference"
-							}
-						},
-						{
-							"name": "sales2017",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sales2017",
-							"dataset": {
-								"referenceName": "sales2017",
-								"type": "DatasetReference"
-							}
-						}
-					],
-					"script": "section Section1;\r\nshared sales2015 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2015.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared sales2016 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2016.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared sales2017 = let AdfDoc = AzureStorage.BlobContents(\"https://storagevente.blob.core.windows.net/dossiervente/AdventureWorks_Sales_2017.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"sales2015\" in Source;\r\n",
-					"documentLocale": "en-us"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/sales2015')]",
-				"[concat(variables('factoryId'), '/datasets/sales2016')]",
-				"[concat(variables('factoryId'), '/datasets/sales2017')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipelineallsales')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "dataflowallsales",
-						"description": "Combine all sales ",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflowsales",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"sales2015": {},
-									"sales2016": {},
-									"sales2017": {},
-									"allsales": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 16,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "Deletesalesseparees",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "Copy data1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "datasetdeletesales",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"logStorageSettings": {
-								"linkedServiceName": {
-									"referenceName": "AzureBlobStorage1",
-									"type": "LinkedServiceReference"
-								}
-							},
-							"enableLogging": true,
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true,
-								"wildcardFileName": "AdventureWorks_Sales_*.csv",
-								"enablePartitionDiscovery": false
-							}
-						}
-					},
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "dataflowallsales",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "allsales",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Azuresales",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"lastPublishTime": "2024-12-02T02:58:22Z"
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "dossierventetransform"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CustomerKey",
+						"type": "String"
+					},
+					{
+						"name": "Prefix",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "BirthDate",
+						"type": "String"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "String"
+					},
+					{
+						"name": "AnnualIncome",
+						"type": "String"
+					},
+					{
+						"name": "TotalChildren",
+						"type": "String"
+					},
+					{
+						"name": "EducationLevel",
+						"type": "String"
+					},
+					{
+						"name": "Occupation",
+						"type": "String"
+					},
+					{
+						"name": "HomeOwner",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflowsales')]",
-				"[concat(variables('factoryId'), '/datasets/datasetdeletesales')]",
-				"[concat(variables('factoryId'), '/datasets/allsales')]",
-				"[concat(variables('factoryId'), '/datasets/Azuresales')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipelinecopycustomer')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/DSblobdossiervente')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Copycustomers",
-						"description": "copy customers file into another container dossierventetransform ",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "datasetcustomers",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "sinkcustomer",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "testifcopyok",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Copycustomers",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@equals(activity('Copycustomers').Status, 'Succeeded')",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Data flow1",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "dataflowcustomersyearadd",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"sinkcustomer": {},
-												"sinkcustomeryearadd": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"lastPublishTime": "2024-12-01T01:58:39Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/datasetcustomers')]",
-				"[concat(variables('factoryId'), '/datasets/sinkcustomer')]",
-				"[concat(variables('factoryId'), '/dataflows/dataflowcustomersyearadd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipelinemain')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "dossiervente"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
 					{
-						"name": "Execute Pipeline1",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pipelinecopycustomer",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
+						"name": "ProductCategoryKey",
+						"type": "String"
 					},
 					{
-						"name": "Execute Pipeline2",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute Pipeline1",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pipelineallsales",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
+						"name": "CategoryName",
+						"type": "String"
 					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-12-02T02:58:22Z"
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipelinecopycustomer')]",
-				"[concat(variables('factoryId'), '/pipelines/pipelineallsales')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		}
 	]

@@ -11,6 +11,15 @@
 		"AzureSqlDatabase1_password": {
 			"value": ""
 		},
+		"AzureSqlDatabase2_password": {
+			"value": ""
+		},
+		"linkedService1_password": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"value": "serverdatabasekans.database.windows.net"
 		},
@@ -19,6 +28,27 @@
 		},
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"value": "adminkans"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_server": {
+			"value": "serverdatabasekans.database.windows.net"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_database": {
+			"value": "@{linkedService().paradatabasename}"
+		},
+		"AzureSqlDatabase2_properties_typeProperties_userName": {
+			"value": "adminkans"
+		},
+		"linkedService1_properties_typeProperties_server": {
+			"value": "serverdatabasekans.database.windows.net"
+		},
+		"linkedService1_properties_typeProperties_database": {
+			"value": "ventedabasejoanita"
+		},
+		"linkedService1_properties_typeProperties_userName": {
+			"value": "adminkans"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://storagevente.dfs.core.windows.net/"
 		}
 	}
 }

@@ -39,16 +39,28 @@
 					{
 						"activity": "Get Metadata1",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@greater(activity('Get Metadata1').output.size, 5000)",
+						"value": "@greater(activity('Get Metadata1').output.size,19635945)",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "Fail1",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "erreur",
+								"errorCode": "500"
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "AT-COPY-CUSTOMER",

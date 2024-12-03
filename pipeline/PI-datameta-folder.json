@@ -86,7 +86,7 @@
 									"formatSettings": {
 										"type": "DelimitedTextWriteSettings",
 										"quoteAllText": true,
-										"fileExtension": ".txt"
+										"fileExtension": ""
 									}
 								},
 								"enableStaging": false,

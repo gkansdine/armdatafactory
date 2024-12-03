@@ -20,13 +20,10 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"columnCount",
-						"contentMD5",
-						"exists",
-						"itemName",
-						"itemType",
 						"size",
 						"lastModified",
+						"itemName",
+						"size",
 						"structure"
 					],
 					"storeSettings": {
